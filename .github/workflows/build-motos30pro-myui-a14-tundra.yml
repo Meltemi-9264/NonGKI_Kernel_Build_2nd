@@ -32,15 +32,15 @@ env:
   DEFCONFIG_ORIGIN_IMAGE: "https://github.com/Meltemi-9264/NonGKI_Kernel_Build_2nd/releases/download/v1.0-boot/boot.img"
   DEFCONFIG_FROM_BOOT: true
 
-  KERNELSU_SOURCE : ""
-  KERNELSU_BRANCH : ""
+  KERNELSU_SOURCE : "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh"
+  KERNELSU_BRANCH : "susfs-dev"
 
   KERNELSU_AUTO_GET : "false"
-  KERNELSU_AUTO_FORK : "sukisu" 
+  KERNELSU_AUTO_FORK : "" 
 
-  SUSFS_ENABLE : false
-  SUSFS_FIXED : false
-  SUSFS_UPDATE : false
+  SUSFS_ENABLE : true
+  SUSFS_FIXED : true
+  SUSFS_UPDATE : true
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
