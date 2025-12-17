@@ -35,7 +35,7 @@ env:
   DEFCONFIG_FROM_BOOT: true
 
   # KernelSU 设置 (保持你原来的需求)
-  KERNELSU_SOURCE : "next"
+  KERNELSU_SOURCE : ""
   KERNELSU_BRANCH : "" # 推荐用 main 或 v0.9.5
 
   KERNELSU_AUTO_GET : "true"
