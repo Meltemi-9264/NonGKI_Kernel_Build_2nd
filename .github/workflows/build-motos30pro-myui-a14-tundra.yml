@@ -21,7 +21,6 @@ env:
   CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android11-release/clang-r383902b.tar.gz"
   CLANG_BRANCH : "main"
 
-  # GCC：开启 (5.4 内核需要 GCC)
   GCC_GNU : true
   GCC_64_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.git"
   GCC_64_BRANCH : "android-12.1.0_r27"
@@ -29,28 +28,25 @@ env:
   GCC_32_BRANCH : "android-12.1.0_r27"
 
   DEFCONFIG_SOURCE: ""
-  # 【关键修改 3】基座配置：Lahaina QGKI
   DEFCONFIG_NAME : ""
   DEFCONFIG_ORIGIN_IMAGE: "https://github.com/Meltemi-9264/NonGKI_Kernel_Build_2nd/releases/download/v1.0-boot/boot.img"
   DEFCONFIG_FROM_BOOT: true
 
-  # KernelSU 设置 (保持你原来的需求)
   KERNELSU_SOURCE : ""
-  KERNELSU_BRANCH : "" # 推荐用 main 或 v0.9.5
+  KERNELSU_BRANCH : ""
 
   KERNELSU_AUTO_GET : "false"
   KERNELSU_AUTO_FORK : "sukisu" 
 
-  SUSFS_ENABLE : true
-  SUSFS_FIXED : true
-  SUSFS_UPDATE : true
+  SUSFS_ENABLE : false
+  SUSFS_FIXED : false
+  SUSFS_UPDATE : false
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
 
   BOOT_SOURCE : ""
 
-  # Moto 的 DTBO 绝对不能替换，否则变砖
   NEED_DTBO : false
   NEED_SAFE_DTBO : false
 
@@ -60,8 +56,6 @@ env:
   PYTHON_VERSION: "3"
   PACK_METHOD: "Anykernel3"
   KERNELSU_METHOD: "shell"
-  
-  # 下面这些补丁根据你的需求开启，如果只是想先跑通，建议先 false
   PATCHES_SOURCE: "false"
   PATCHES_BRANCH: "false"
   
