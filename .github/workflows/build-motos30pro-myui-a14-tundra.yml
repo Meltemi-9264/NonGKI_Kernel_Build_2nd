@@ -38,7 +38,7 @@ env:
   KERNELSU_SOURCE : ""
   KERNELSU_BRANCH : "" # 推荐用 main 或 v0.9.5
 
-  KERNELSU_AUTO_GET : "true"
+  KERNELSU_AUTO_GET : "false"
   KERNELSU_AUTO_FORK : "sukisu" 
 
   SUSFS_ENABLE : true
