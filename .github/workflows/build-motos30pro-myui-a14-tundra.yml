@@ -1,142 +1,75 @@
-name: Build motos30pro myui a14 tundra
-
-on:
-  workflow_call:
-  workflow_dispatch:
-
 env:
   # Device env
   DEVICE_NAME : "Motorola S30 Pro"
   DEVICE_CODENAME : "tundra"
-
-  # 编译参数：保持官方要求
+  
+  # 编译参数
   CUSTOM_CMDS : "CLANG_TRIPLE=aarch64-linux-gnu-"
   EXTRA_CMDS : "LD=ld.lld LLVM=1 LLVM_IAS=1"
+  
+  # --- 1. 内核源码 (已切换为 Moto 官方开源) ---
+  KERNEL_SOURCE : "https://github.com/MotorolaMobilityLLC/kernel-msm.git"
+  KERNEL_BRANCH : "MMI-U1SJS34.2-92-10-3"
 
-  # 【关键修改 1】源码：使用 LineageOS 仓库 (基于官方源码修复了编译问题)
-  KERNEL_SOURCE: "https://github.com/MotorolaMobilityLLC/kernel-msm.git"
-  KERNEL_BRANCH: "MMI-U1SJS34.2-92-10-3"
-
-  # 【关键修改 2】编译器：必须用旧版 r383902b (Android 11)，否则必报错
-  CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android11-release/clang-r383902b.tar.gz"
+  # --- 2. 编译器 (强烈建议升级，原版太旧无法编译 A14 内核) ---
+  # 使用 Android 14 对应的 Clang r487747c
+  CLANG_SOURCE : "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/android-14.0.0_r0.75/clang-r487747c.tar.gz"
   CLANG_BRANCH : "main"
-
+  
   GCC_GNU : true
   GCC_64_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.git"
   GCC_64_BRANCH : "android-12.1.0_r27"
   GCC_32_SOURCE : "https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9.git"
   GCC_32_BRANCH : "android-12.1.0_r27"
 
+  # --- 3. Defconfig 配置 (修复报错的关键) ---
   DEFCONFIG_SOURCE: ""
-  DEFCONFIG_NAME : ""
+  # 这里必须填写，脚本会将提取出的配置保存为这个文件名
+  DEFCONFIG_NAME : "tundra_defconfig" 
+  # 官方 boot.img 下载地址
   DEFCONFIG_ORIGIN_IMAGE: "https://github.com/Meltemi-9264/NonGKI_Kernel_Build_2nd/releases/download/v1.0-boot/boot.img"
   DEFCONFIG_FROM_BOOT: true
 
+  # --- KernelSU & SusFS 设置 ---
   KERNELSU_SOURCE : "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh"
   KERNELSU_BRANCH : "susfs-dev"
-
   KERNELSU_AUTO_GET : "true"
-  KERNELSU_AUTO_FORK : "sukisu" 
-
+  KERNELSU_AUTO_FORK : "sukisu"
   SUSFS_ENABLE : false
   SUSFS_FIXED : false
   SUSFS_UPDATE : false
 
+  # --- 打包工具 ---
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
-
   BOOT_SOURCE : ""
-
+  
+  # --- 其他设置 ---
   NEED_DTBO : false
   NEED_SAFE_DTBO : false
-
   ROM_TEXT : "myui_a14"
-
-  # Other env
   PYTHON_VERSION: "3"
   PACK_METHOD: "Anykernel3"
   KERNELSU_METHOD: "shell"
   PATCHES_SOURCE: "false"
   PATCHES_BRANCH: "false"
-  
   SUSFS_FOLDER_FIXED: ""
   SUSFS_155_FIXED: ""
   SUSFS_151X_FIXED: ""
   SUSFS_LATEST_FIXED: ""
-
   REKERNEL_ENABLE: "false"
   HYMOFS_ENABLE: "false"
   HOOK_METHOD: "syscall"
   HOOK_OLDER: "false"
-  KPM_ENABLE: "false" 
+  KPM_ENABLE: "false"
   KPM_PATCH_SOURCE: ""
   BASEBAND_GUARD_ENABLE: "false"
   BASEBAND_GUARD_BOOT: "false"
   HIDE_STUFF: "false"
-  
   GENERATE_DTB: "false"
   GENERATE_CHIP: "qcom"
-  
   BUILD_DEBUGGER: "false"
   SKIP_PATCH: "false"
-
-  # 【关键修改 4】合并配置：手动拼装 Tundra 的碎片
   BUILD_OTHER_CONFIG: ""
   MERGE_CONFIG_FILES: ""
-
-  FREE_MORE_SPACE: "true" # 建议开启，防止磁盘满
-
-jobs:
-  build-kernel:
-    name: Build Kernel
-    runs-on: ubuntu-latest
-    env:
-      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
-      CCACHE_NOHASHDIR: "true"
-      CCACHE_HARDLINK: "true"
-
-    steps:
-      - name: ⏰ Checkout repository
-        uses: actions/checkout@v4
-
-      - name: ⌛️ Compilation environment preparation
-        uses: ./.github/workflows/build-env
-
-      - name: ⚙️ Get neccssary tools
-        uses: ./.github/workflows/build-ready
-
-      - name: 🪝 Patch Kernel of SUSFS
-        uses: ./.github/workflows/patch-susfs
-
-      - name: 🔗 Patch for no-kprobe
-        uses: ./.github/workflows/patch-no-kprobe
-
-      # 【关键修改 5】在这里注入 Wi-Fi 修复脚本
-      - name: 🪛 Extra Kernel Options
-        run: |
-          # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
-          # Nothing
-
-      - name: 🧰 Patch Kernel of Re:Kernel
-        uses: ./.github/workflows/patch-rekernel
-
-      - name: 🔒 Patch Kernel of Baseband Guard
-        uses: ./.github/workflows/patch-baseband-guard
-
-      - name: 🍀 Patch Kernel of HymoFS
-        uses: ./.github/workflows/patch-hymofs
-
-      - name: 🔧 Patch Hide Stuff
-        uses: ./.github/workflows/patch-hide-stuff
-
-      - name: 🚀 Build Process
-        uses: ./.github/workflows/build-process
-
-      - name: 🔩 Pack Process
-        uses: ./.github/workflows/pack-process
-
-      - name: ✏️ Upload Artifacts
-        uses: ./.github/workflows/upload-files
-
-
+  FREE_MORE_SPACE: "true"
