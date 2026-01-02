@@ -35,12 +35,12 @@ env:
   KERNELSU_SOURCE : "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh"
   KERNELSU_BRANCH : "susfs-dev"
 
-  KERNELSU_AUTO_GET : "false"
-  KERNELSU_AUTO_FORK : "" 
+  KERNELSU_AUTO_GET : "true"
+  KERNELSU_AUTO_FORK : "sukisu" 
 
-  SUSFS_ENABLE : true
-  SUSFS_FIXED : true
-  SUSFS_UPDATE : true
+  SUSFS_ENABLE : false
+  SUSFS_FIXED : false
+  SUSFS_UPDATE : false
 
   AK3_SOURCE : "https://github.com/osm0sis/AnyKernel3.git"
   AK3_BRANCH : "master"
